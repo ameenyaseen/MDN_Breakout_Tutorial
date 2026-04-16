@@ -25,18 +25,26 @@
         <button id="runButton">Start game</button>
 
         <script>
+            /* Define our constants and variables */
             const screen = document.getElementById("main_canvas");
             const ctx = screen.getContext("2d");
             const ballRadius = 10;
-            var ballColor = "#0095DD"
-            
-            let x = screen.width/2;
-            let y = screen.height-30;
+            const paddleHeight = 10;
+            const paddleLength = 70;
 
-            dx = 2
-            dy = 2
+            var ballColor = "#0095DD"
+            var paddleX = (screen.width - paddleLength)/2;
+            var x = screen.width/2;
+            var y = screen.height-30;
+
+            var rightPressed = false;
+            var leftPressed = false;
+
+            var dx = 2
+            var dy = 2
             
-            function randomColor(){
+            function randomColor() {
+                /* Generates a random color */
                 var hexChar = "0123456789ABCDEF";
                 var out = "#"
                 for (var i = 0; i < 6; i++){
@@ -45,9 +53,18 @@
                 console.log({out})
                 return out;
             }
+            
+            function drawPaddle() {
+                /* Draws a paddle based on the defined constants above */
+                ctx.beginPath();
+                ctx.rect(paddleX, screen.height - paddleHeight, paddleLength, paddleHeight);
+                ctx.fillStyle = ballColor;
+                ctx.fill();
+                ctx.closePath();
+            }
 
-            function drawBall(){
-                /* Draws a ball of radius ballRadius at coordinate x, y */
+            function drawBall() {
+                /* Draws a ball based on the defined constants above */
                 ctx.beginPath();
                 ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
                 ctx.fillStyle = ballColor;
@@ -55,26 +72,60 @@
                 ctx.closePath();
             }
 
-            function draw(){
+            function keyPressHandler(b) {
+                /* Handles the key press event */
+                if (b.key == "Right" || b.key == "ArrowRight") {
+                    rightPressed = true;
+                } else if (b.key == "Left" || b.key =="ArrowLeft") {
+                    leftPressed = true
+                }
+            }
+
+            function keyReleaseHandler(b) {
+                /* Handles the key release */
+                if (b.key == "Right" || b.key == "ArrowRight") {
+                    rightPressed = false;
+                } else if (b.key == "Left" || b.key == "ArrowLeft") {
+                    leftPressed = false;
+                }
+            }
+
+            /* Our keypress event listeners are added here */
+            document.addEventListener("keydown", keyPressHandler);
+            document.addEventListener("keyup", keyReleaseHandler);
+
+
+            function draw() {
                 ctx.clearRect(0, 0, screen.width, screen.height);
                 drawBall();
+                drawPaddle();
+
+                /* Move the paddle (I was thinking of the song Move Me from RR Type 4) */
+                if (rightPressed) {
+                    paddleX = Math.min(paddleX + 7, screen.width - paddleLength);
+                }
+
+                if (leftPressed) {
+                    paddleX = Math.max(paddleX - 7, 0);
+                } 
+
 
                 /* Collision check */
                 if (x + dx > screen.width - ballRadius || x + dx < ballRadius){
                     dx = -dx;
-                    ballColor = randomColor();
+                    // ballColor = randomColor();
                 }
 
                 if (y + dy > screen.height - ballRadius || y + dy < ballRadius){
                     dy = -dy;
-                    ballColor = randomColor();
+                    // ballColor = randomColor();
                 }
 
                 x = x + dx;
                 y = y + dy;
             }
 
-            function startGame(){
+            function startGame() {
                 setInterval(draw, 10);
             }
 
