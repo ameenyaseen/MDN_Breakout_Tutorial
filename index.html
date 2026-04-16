@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>MDN Tutorial - BREAKOUT!</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+            canvas {
+                background: #eeeeee;
+                display: block;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="main_canvas" width="480" height="380"></canvas>
+
+        <script>
+            const screen = document.getElementById("main_canvas");
+            const ctx = screen.getContext("2d")
+            
+            /* Red Square */
+            ctx.beginPath();
+            ctx.rect(20, 40, 50, 50);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+
+            /* Green Circle */
+            ctx.beginPath();
+            ctx.arc(240, 190, 20, 0, 2*Math.PI);
+            ctx.fillStyle = "green";
+            ctx.fill();
+            ctx.closePath();
+
+            /* Blue Rectangle Outline */
+            ctx.beginPath();
+            ctx.rect(160, 10, 100, 40);
+            ctx.strokeStyle = "rgb(0 0 255 / 50%)";
+            ctx.stroke();
+            ctx.closePath();
+        </script>
+    </body>
+</html>
