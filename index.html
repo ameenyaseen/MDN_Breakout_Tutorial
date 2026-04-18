@@ -30,7 +30,9 @@
             const ctx = screen.getContext("2d");
             const ballRadius = 10;
             const paddleHeight = 10;
-            const paddleLength = 70;
+            const paddleLength = 80;
+            const minSpeed = 2;
+            const maxSpeed = 5;
 
             var ballColor = "#0095DD"
             var paddleX = (screen.width - paddleLength)/2;
@@ -40,8 +42,10 @@
             var rightPressed = false;
             var leftPressed = false;
 
-            var dx = 2
-            var dy = 2
+            var dx = 2;
+            var dy = 2;
+
+            var interval = 0;
             
             function randomColor() {
                 /* Generates a random color */
@@ -107,18 +111,58 @@
 
                 if (leftPressed) {
                     paddleX = Math.max(paddleX - 7, 0);
-                } 
+                }
 
 
                 /* Collision check */
+                // Wall collisions should cause ball to lose energy
                 if (x + dx > screen.width - ballRadius || x + dx < ballRadius){
-                    dx = -dx;
+                    if (dx <= 0) {
+                        // Ball is travelling to the left (negative)
+                        dx = -1 * Math.min(dx + 0.5, -1 * minSpeed);
+                    } else {
+                        //Ball is travelling to the right (positive)
+                        dx = -1 * Math.max(dx - 0.5, minSpeed);
+                    }
                     // ballColor = randomColor();
                 }
-
-                if (y + dy > screen.height - ballRadius || y + dy < ballRadius){
-                    dy = -dy;
+                
+                if (y + dy < ballRadius){
+                    if (dy <= 0) {
+                        // Ball is travelling upwards towards ceiling (negative)
+                        dy = -1 * Math.min(dy + 0.5, -1 * minSpeed);
+                    } else {
+                        dy = -1 * Math.max(dy - 0.5, minSpeed)
+                    }
+                    
                     // ballColor = randomColor();
+                }
+                
+                // Paddle Collisions cause speed increases
+                if (y + dy > screen.height - ballRadius) {
+                    if (x > paddleX && x < paddleX + paddleLength) {
+                        if ( ((x > paddleX) || (x < paddleX + paddleLength/4)) || ((x > paddleX + (paddleLength/4)*3) || (x < paddleX + paddleLength)) ) {
+                            if (dx < 0) {
+                                // Ball is travelling to the left (negative)
+                                dx = Math.max(dx - 1, -1 * maxSpeed);
+                            } else {
+                                // Ball is travelling to the right (positive)
+                                dx = Math.min(dx + 1, maxSpeed);
+                            }
+
+                            dy = -dy;
+
+                        } else {
+                            // Ball is always travelling downwards towards paddle (positive)
+                            dy = -1*Math.max(dy + 1, maxSpeed);
+
+                        }
+                        
+                    } else {
+                        alert("Game Over Chump!");
+                        document.location.reload();
+                        clearInterval(interval)
+                    }
                 }
 
                 x = x + dx;
@@ -126,7 +170,7 @@
             }
 
             function startGame() {
-                setInterval(draw, 10);
+                interval = setInterval(draw, 10);
             }
 
             const runButton = document.getElementById("runButton");
