@@ -34,6 +34,25 @@
             const minSpeed = 2;
             const maxSpeed = 5;
 
+            /* Define constants for our brick grid */
+            const brickRowCount = 3;
+            const brickColumnCount = 5;
+            const brickWidth = 75;
+            const brickHeight = 20;
+            const brickPadding = 10;
+            const brickOffsetTop = 30;
+            const brickOffsetLeft = 30;
+            const brickHealth = 2
+
+            const bricks = [];
+            // Preinit the array to hold values for our bricks
+            for (var c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (var r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = {x: 0, y: 0, hlt: brickHealth}
+                }
+            }
+
             var ballColor = "#0095DD"
             var paddleX = (screen.width - paddleLength)/2;
             var x = screen.width/2;
@@ -42,7 +61,7 @@
             var rightPressed = false;
             var leftPressed = false;
 
-            var dx = 2;
+            var dx = 0;
             var dy = 2;
 
             var interval = 0;
@@ -56,6 +75,24 @@
                 }
                 console.log({out})
                 return out;
+            }
+
+            function drawBricks() {
+                /* Draws the bricks by iterating through the list of bricks */
+                for (var c = 0; c < brickColumnCount; c++) {
+                    for (var r = 0; r < brickRowCount; r++) {
+                        // Calculate the coordinate
+                        var brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                        var brickY = r * (brickHeight + brickPadding) + brickOffsetTop
+                        // Draw the rectangle
+                        ctx.beginPath()
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = ballColor;
+                        ctx.fill();
+                        ctx.closePath();
+
+                    }
+                }
             }
             
             function drawPaddle() {
@@ -87,9 +124,9 @@
 
             function keyReleaseHandler(b) {
                 /* Handles the key release */
-                if (b.key == "Right" || b.key == "ArrowRight") {
+                if (b.key === "Right" || b.key === "ArrowRight") {
                     rightPressed = false;
-                } else if (b.key == "Left" || b.key == "ArrowLeft") {
+                } else if (b.key === "Left" || b.key === "ArrowLeft") {
                     leftPressed = false;
                 }
             }
@@ -101,8 +138,10 @@
 
             function draw() {
                 ctx.clearRect(0, 0, screen.width, screen.height);
+                // Draw all we need here
                 drawBall();
                 drawPaddle();
+                drawBricks();
 
                 /* Move the paddle (I was thinking of the song Move Me from RR Type 4) */
                 if (rightPressed) {
@@ -144,10 +183,10 @@
                         if ( ((x > paddleX) || (x < paddleX + paddleLength/4)) || ((x > paddleX + (paddleLength/4)*3) || (x < paddleX + paddleLength)) ) {
                             if (dx < 0) {
                                 // Ball is travelling to the left (negative)
-                                dx = Math.max(dx - 1, -1 * maxSpeed);
+                                dx = Math.max(dx - 1 + Math.random(), -1 * maxSpeed);
                             } else {
                                 // Ball is travelling to the right (positive)
-                                dx = Math.min(dx + 1, maxSpeed);
+                                dx = Math.min(dx + 1 + Math.random(), maxSpeed);
                             }
 
                             dy = -dy;
